@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Tracker - Dhaka Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    .tab-active {
+      border-bottom: 3px solid currentColor;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100">
+
+  
+  <nav class="bg-blue-600 text-white p-6">
+
+
+    <h1 class="text-2xl font-bold mb-4">Job Tracker</h1>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+        <div class="bg-white text-blue-600 p-4 rounded-lg shadow">
+         
+          <h2 class="text-lg font-semibold">All Jobs</h2>
+        <p id="allJobsCount" class="text-2xl font-bold">8</p>
+
+      </div>
+      <div class="bg-white text-green-600 p-4 rounded-lg shadow">
+        <h2 class="text-lg font-semibold">Interview</h2>
+        <p id="interviewJobsCount" class="text-2xl font-bold">0</p>
+
+
+      </div>
+
+      <div class="bg-white text-red-600 p-4 rounded-lg shadow">
+        <h2 class="text-lg font-semibold">Rejected</h2>
+        <p id="rejectedJobsCount" class="text-2xl font-bold">0</p>
+     
+      </div>
+    </div>
+  </nav>
+
+
+
+
+  <div class="flex justify-between items-center px-6 py-4 bg-gray-50 border-b">
+
+    <h2 class="text-xl font-semibold text-gray-700">Available Jobs</h2>
+    <p class="text-lg font-bold text-blue-600">
+
+      <span id="visibleJobs">8</span> of <span id="totalJobs">8</span>
+    </p>
+
+  </div>
+
+
+  <div class="flex justify-center gap-10 bg-white shadow p-4 text-lg font-semibold">
+
+    <p id="tabAll" class="cursor-pointer tab-active text-blue-600">All Jobs</p>
+
+    <p id="tabInterview" class="cursor-pointer text-green-600">Interview</p>
+    <p id="tabRejected" class="cursor-pointer text-red-600">Rejected</p>
+
+  </div>
+
+
+  <div id="jobsContainer" class="grid grid-cols-1 md:grid-cols-4 gap-6 p-6"></div>
+
+  <script>
+
+    let jobList = [
+      { id: 1, companyName: "TechNova Bangladesh", title: "Software Engineer", location: "Gulshan, Dhaka", type: "Full-time", salary: "BDT 80,000 - 120,000", description: "A fast-growing tech startup focused on building web and mobile applications for global clients.", status: "all" },
+      { id: 2, companyName: "ByteCraft Solutions", title: "Frontend Developer", location: "Banani, Dhaka", type: "Full-time", salary: "BDT 70,000 -100,000", description: "A digital agency specializing in UI/UX design and frontend development.", status: "all" },
+      { id: 3, companyName: "DataBridge Analytics", title: "Data Analyst", location: "Tejgaon Industrial Area, Dhaka", type: "Full-time", salary: "BDT 65,000 - 95,000", description: "Provides data analysis and business intelligence solutions to local and international clients.", status: "all" },
+      { id: 4, companyName: "CloudWave Technologies", title: "DevOps Engineer", location: "Mirpur, Dhaka", type: "Full-time", salary: "BDT 90,000 - 130,000", description: "Focuses on cloud infrastructure and automation for SaaS platforms.", status: "all" },
+      { id: 5, companyName: "FinServe Ltd.", title: "Backend Developer", location: "Dhanmondi, Dhaka", type: "Full-time", salary: "BDT 85,000 - 120,000", description: "Works on fintech solutions for local banks and financial institutions.", status: "all" },
+      { id: 6, companyName: "EduTech Innovations", title: "Mobile App Developer", location: "Uttara, Dhaka", type: "Full-time", salary: "BDT 75,000 - 105,000", description: "Develops educational apps and platforms for students and schools.", status: "all" },
+      { id: 7, companyName: "SecureNet", title: "QA Engineer", location: "Mohammadpur, Dhaka", type: "Full-time", salary: "BDT 60,000 - 85,000", description: "A cybersecurity firm ensuring quality and stability of security software products.", status: "all" },
+      { id: 8, companyName: "GreenField Tech", title: "Product Manager", location: "Gulshan, Dhaka", type: "Full-time", salary: "BDT 100,000 - 150,000", description: "Leads product development for sustainable agricultural tech solutions.", status: "all" }
+    ];
+
+
+    const jobsContainer = document.getElementById("jobsContainer");
+    const allJobsCount = document.getElementById("allJobsCount");
+    const interviewJobsCount = document.getElementById("interviewJobsCount");
+    const rejectedJobsCount = document.getElementById("rejectedJobsCount");
+    const visibleJobs = document.getElementById("visibleJobs");
+
+    const totalJobs = document.getElementById("totalJobs");
+
+
+    
+    const tabAll = document.getElementById("tabAll");
+
+    const tabInterview = document.getElementById("tabInterview");
+    const tabRejected = document.getElementById("tabRejected");
+
+    let activeFilter = "all";
+
+    
+    function updateCounters() {
+         const interviewCount = jobList.filter(job => job.status === "interview").length;
+
+         const rejectedCount = jobList.filter(job => job.status === "rejected").length;
+
+
+                 allJobsCount.textContent = jobList.length;
+
+      interviewJobsCount.textContent = interviewCount;
+      rejectedJobsCount.textContent = rejectedCount;
+    }
+
+    
+    function createJobCard(job) {
+
+      const card = document.createElement("div");
+      card.className = "bg-white p-4 rounded-lg shadow-md relative";
+
+      let label = "";
+      if (job.status === "interview") label = `<span class="bg-green-500 text-white px-3 py-1 rounded">Interview</span>`;
+                   else if (job.status === "rejected") label = `<span class="bg-red-500 text-white px-3 py-1 rounded">Rejected</span>`;
+
+     
+                   card.innerHTML = `
+        <button onclick="removeJob(${job.id})" class="absolute top-2 right-2 text-red-500 hover:text-red-700 text-lg">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+
+        <h2 class="text-lg font-semibold mt-2">${job.title}</h2>
+        <p class="text-gray-500 font-semibold">${job.companyName}</p>
+        <div class="mt-2 mb-2">${label}</div>
+
+
+        <p class="text-gray-600"> ${job.location}</p>
+        <p class="text-gray-800 font-medium mb-2"> ${job.salary}</p>
+        <p class="text-gray-700 mb-2"> ${job.description}</p>
+
+
+        <p class="text-gray-500 italic">Type: ${job.type}</p>
+
+        <div class="flex gap-3 mt-3">
+
+          <button onclick="markInterview(${job.id})" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">Interview</button>
+          <button onclick="markRejected(${job.id})" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Rejected</button>
+        </div>
+
+      `;
+
+      return card;
+
+    }
+
+    function renderJobs(filter) {
+
+      activeFilter = filter;
+      jobsContainer.innerHTML = "";
+
+      const filteredJobs = jobList.filter(job => filter === "all" || job.status === filter);
+
+      visibleJobs.textContent = filteredJobs.length;
+      totalJobs.textContent = jobList.length;
+
+      if (filteredJobs.length === 0) {
+  jobsContainer.innerHTML = `
+    <div class="flex flex-col items-center justify-center min-h-[60vh] col-span-full">
+      <img src="./image/jobs.png" alt="No Jobs" class="mb-4 w-48 h-auto">
+      <p class="text-gray-500 text-2xl font-semibold text-center">No jobs available</p>
+    </div>
+  `;
+  return;
+}
+
+      filteredJobs.forEach(job => jobsContainer.appendChild(createJobCard(job)));
+
+      highlightActiveTab(filter);
+    }
+
+    
+
+    function removeJob(id) {
+      jobList = jobList.filter(job => job.id !== id);
+      updateCounters();
+
+      renderJobs(activeFilter);
+    }
+
+   
+    function markInterview(id) {
+
+      const job = jobList.find(job => job.id === id);
+      if (job) job.status = "interview";
+
+      updateCounters();
+      renderJobs(activeFilter);
+    }
+
+   
+    function markRejected(id) {
+
+      const job = jobList.find(job => job.id === id);
+      if (job) job.status = "rejected";
+
+      updateCounters();
+      renderJobs(activeFilter);
+    }
+
+    
+    function highlightActiveTab(filter) {
+
+      tabAll.classList.remove("tab-active");
+      tabInterview.classList.remove("tab-active");
+
+
+
+      tabRejected.classList.remove("tab-active");
+
+      if (filter === "all") tabAll.classList.add("tab-active");
+
+         else if (filter === "interview") tabInterview.classList.add("tab-active");
+                 else if (filter === "rejected") tabRejected.classList.add("tab-active");
+    }
+
+    
+    tabAll.addEventListener("click", () => renderJobs("all"));
+
+    
+    tabInterview.addEventListener("click", () => renderJobs("interview"));
+    tabRejected.addEventListener("click", () => renderJobs("rejected"));
+
+    
+    updateCounters();
+    renderJobs("all");
+  </script>
+
+</body>
+
+</html>
